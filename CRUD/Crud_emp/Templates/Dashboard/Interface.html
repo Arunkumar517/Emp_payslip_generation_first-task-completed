@@ -1,0 +1,75 @@
+{%extends "Dashboard/base.html"%} {%block title%}Employee Details{%endblock%} {%block content%}
+<div class= "d-flex justify-content-between mb-3">
+  <h2>Employee Dashboard</h2>
+<a class="btn btn-outline-primary" href={% url 'Create' %}>Create Employee</a>
+</div>
+
+<table class="table table-bordered mt-3">
+<thead class="p-3 mb-2 bg-info text-white">
+  <tr>
+    <th>#</th>
+    <th>Emp_Id</th>
+    <th>Emp_Name</th>
+    <th>Emp_Designasion</th>
+    <th>Action</th>
+  </tr>
+  <thead>
+<tbody class="table-bg-secondory">
+ {% for employee in employees %}
+  <tr>
+    <td>{{ forloop.counter }}</td>
+    <td>{{ employee.Employee_id }}</td>
+    <td>{{ employee.Employee_name }}</td>
+    <td>{{ employee.Designation }}</td>
+    <td>
+<form method="POST" action="{% url 'Edit' employee.id %}" style="display:inline;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-outline-success" >Edit</button>
+</form>    
+<form method="POST" action="{% url 'Delete' employee.id %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete this employee?');">Delete</button>
+</form>     
+<form method="POST" action="{% url 'Download' employee.id %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-secondary">PDF</button>
+</form>    
+    </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+
+
+  <!-- Modal -->
+<div class="modal fade" id="deletemodel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Conform Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+       Are you sure Delete This Employee
+      </div>
+      <div class="modal-footer">
+        <form method="POST" id="deleteForm">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Confirm</button>
+</form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="model">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const deleteModal = document.getElementById('deletemodel');
+  deleteModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const employeeId = button.getAttribute('data-id');
+    const deleteForm = document.getElementById('deleteForm');
+    deleteForm.action = `/delete/${employeeId}/`;
+  });
+</script>
+</table>
+{%endblock%}

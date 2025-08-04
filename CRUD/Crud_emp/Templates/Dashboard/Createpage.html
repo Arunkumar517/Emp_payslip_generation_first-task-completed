@@ -1,0 +1,14 @@
+{%extends "Dashboard/base.html"%}
+{%block title%} Create Employee {%endblock%}
+ {%block content%}
+{%load crispy_forms_tags%}
+
+<h2>Create New Employee</h2>
+
+<form method="POST" class="form-group card p-4">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <button href={% url 'Interface' %} type="submit" class="btn btn-outline-primary">Save</button><br />
+  <a href={%url 'Interface'%} class="btn btn-outline-secondary">Cancel</a>
+</form>
+{%endblock%}

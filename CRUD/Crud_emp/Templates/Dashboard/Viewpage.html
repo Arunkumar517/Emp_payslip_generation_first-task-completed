@@ -1,0 +1,128 @@
+{% extends 'Dashboard/base.html' %} {% block title %}Edit Payslip{% endblock %}
+{% block content %}
+<div class="container payslip-box mt-5">
+  <div class="header text-center mb-4">
+    <h2>Employee Payslip</h2>
+    <p>{{ employee.employee_salary_date|date:"F Y" }}</p>
+  </div>
+
+  <form method="POST" action="">
+    {% csrf_token %}
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label><strong>Name:</strong></label>
+        <input
+          type="text"
+          name="employeeName"
+          class="form-control"
+          value="{{ employee.Employee_name }}"
+        />
+      </div>
+      <div class="col-md-6">
+        <label><strong>Employee ID:</strong></label>
+        <input
+          type="text"
+          name="employeeId"
+          class="form-control"
+          value="{{ employee.Employee_id }}"
+        />
+      </div>
+      <div class="col-md-6 mt-3">
+        <label><strong>Department:</strong></label>
+        <input
+          type="text"
+          name="department"
+          class="form-control"
+          value="{{ employee.Department }}"
+        />
+      </div>
+      <div class="col-md-6 mt-3">
+        <label><strong>Designation:</strong></label>
+        <input
+          type="text"
+          name="designation"
+          class="form-control"
+          value="{{ employee.Designation }}"
+        /></div>
+    <table class="table table-bordered mt-4">
+      <thead class="table-light">
+        <tr>
+          <th>Description</th>
+          <th>Amount (₹)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Basic Salary</td>
+          <td>
+            <input
+              type="number"
+              name="basicPay"
+              class="form-control"
+              value="{{ employee.Basic_pay }}"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>Allowance</td>
+          <td>
+            <input
+              type="number"
+              name="Allowance"
+              class="form-control"
+              value="{{ employee.Allowance }}"
+            />
+          </td>
+        </tr>
+        <tr>
+          <td>Provident Fund (PF)</td>
+          <td>
+            <input
+              type="number"
+              name="employee_pf"
+              class="form-control"
+              value="{{ employee.employee_pf }}"
+            />
+          </td>
+        </tr>
+        <tr class="table-secondary">
+          <td><strong>Net Salary</strong></td>
+          <td>
+            <strong id="netSalary">
+              ₹ {{ net_salary|floatformat:2 }}
+            </strong>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between mt-4">
+      <a href="{% url 'Interface' %}" class="btn btn-outline-secondary"
+        >Cancel</a
+      >
+      <a href="{% url 'Download' employee.id %}" class="btn btn-outline-danger"
+        >Download</a
+      >
+    </div>
+  </form>
+</div>
+<script>
+  function updateNetSalary() {
+    let basic = parseFloat(document.querySelector('input[name="basicPay"]').value) || 0;
+    let allowance = parseFloat(document.querySelector('input[name="Allowance"]').value) || 0;
+    let pf = parseFloat(document.querySelector('input[name="employee_pf"]').value) || 0;
+
+    let net = basic + allowance - pf;
+    document.getElementById("netSalary").innerText = "₹ " + net.toFixed(2);
+  }
+
+  // Trigger calculation on page load
+  window.onload = updateNetSalary;
+
+  // Attach onchange listeners to auto-update when user changes inputs
+  document.querySelectorAll('input[name="basicPay"], input[name="Allowance"], input[name="employee_pf"]').forEach(input => {
+    input.addEventListener("input", updateNetSalary);
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,220 @@
+{% extends "Dashboard/base.html" %} {% block title %}Edit Employee{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-lg rounded-4">
+    <div class="p-3 mb-2 bg-info text-white">
+      <h4 class="mb-0">Edit Employee</h4>
+    </div>
+    <div class="card-body">
+      <style>
+        body {
+          background-color: #f8f9fa;
+          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .form-container {
+          background-color: white;
+          border-radius: 10px;
+          box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+          padding: 30px;
+        }
+        .header {
+          color: #2c3e50;
+          margin-bottom: 30px;
+          border-bottom: 2px solid #e9ecef;
+          padding-bottom: 10px;
+        }
+        .salary-section {
+          background-color: #f1f8fe;
+          padding: 20px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          border-left: 4px solid #0d6efd;
+        }
+        .btn-calculate {
+          background-color: #20c997;
+          border-color: #20c997;
+        }
+        .result-label {
+          font-weight: 500;
+          color: #495057;
+        }
+        .result-value {
+          font-weight: 600;
+          color: #212529;
+        }
+      </style>
+
+      <form id="employeeForm" method="POST">
+        {% csrf_token %}
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label for="employeeName" class="form-label">Employee Name</label>
+              <input
+                type="text"
+                class="form-control"
+                name="employeeName"
+                placeholder="Enter full name"
+                value="{{ employee.Employee_name }}"
+              />
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label for="employeeId" class="form-label">Employee ID</label>
+              <input
+                type="text"
+                class="form-control"
+                id="employeeId"
+                placeholder="Enter employee ID"
+                value="{{ employee.Employee_id }}"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label for="department" class="form-label">Department</label>
+              <input
+                type="text"
+                class="form-control"
+                id="department"
+                placeholder="Enter department"
+                value="{{ employee.Department }}"
+              />
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label for="designation" class="form-label">Designation</label>
+              <input
+                type="text"
+                class="form-control"
+                id="designation"
+                placeholder="Enter designation"
+                value="{{ employee.Designation }}"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="salary-section">
+          <h5 class="mb-4">Salary Details</h5>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <div class="form-group">
+                <label for="basicPay" class="form-label">Basic Pay ($)</label>
+                <input
+                  type="number"
+                  class="form-control salary-input"
+                  id="basicPay"
+                  value="{{ employee.Basic_pay }}"
+                />
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="form-group">
+                <label for="Allowance" class="form-label">Allowance ($)</label>
+                <input
+                  type="number"
+                  class="form-control salary-input"
+                  id="Allowance"
+                  value="{{ employee.Allowance }}"
+                />
+              </div>
+            </div>
+            <div class="col-md-4 mb-3">
+              <div class="form-group">
+                <label for="employee_pf" class="form-label"
+                  >Provident Fund ($)</label
+                >
+                <input
+                  type="number"
+                  class="form-control salary-input"
+                  id="employee_pf"
+                  name="employee_pf"
+                  value="{{ employee.employee_pf }}"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <button
+                type="button"
+                class="btn btn-calculate btn-lg w-100 mb-3"
+                onclick="calculateSalary()"
+              >
+                Calculate Salary
+              </button>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 bg-light rounded">
+                <div class="d-flex justify-content-between">
+                  <span class="result-label">Net Salary:</span>
+                  <span class="result-value" id="netSalary"></span>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">{{ form.name.label_tag }} {{ form.name }}</div>
+            <div class="mb-3">
+              {{ form.designation.label_tag }} {{ form.designation }}
+            </div>
+            <div class="mb-3">
+              {{ form.salary.label_tag }} {{ form.salary }}
+            </div>
+            <div class="d-flex justify-content-between">
+              <a href="{% url 'Interface' %}" class="btn btn-outline-secondary"
+                >Cancel</a
+              >
+              <div class="d-flex justify-content-between">
+                <a
+                  href="{% url 'View' employee.id %}"
+                  class="btn btn-outline-success"
+                  type="submit"
+                  >Update</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function calculateSalary() {
+      // Get input values
+      const basicPay =
+        parseFloat(document.getElementById("basicPay").value) || 0;
+      const Allowance =
+        parseFloat(document.getElementById("Allowance").value) || 0;
+      const employee_pf =
+        parseFloat(document.getElementById("employee_pf").value) || 0;
+
+      // Calculate gross salary and net salary
+      const grossSalary = basicPay + Allowance;
+      const netSalary = grossSalary - employee_pf;
+
+      // Format the result with 2 decimal places and thousand separator
+      const formattedNetSalary = netSalary.toLocaleString("en-US", {
+        style: "decimal",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+
+      // Display the result
+      document.getElementById("netSalary").textContent =
+        "$" + formattedNetSalary;
+    }
+
+    // Add event listeners to salary inputs for real-time calculation
+    document.querySelectorAll(".salary-input").forEach((input) => {
+      input.addEventListener("input", calculateSalary);
+    });
+  </script>
+  {% endblock %}
+</div>
